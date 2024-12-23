@@ -1,0 +1,12 @@
+# Virtual Environment
+venv/
+
+# Dataset Directories
+dataset/
+processed_dataset/
+processed_dataset_v2/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class

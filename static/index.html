@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bottle Status Classifier</title>
+    <style>
+        img {
+            max-width: 300px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload an Image of a Beer Bottle</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput" accept="image/jpeg, image/jpg, image/png" required><br><br>
+        <img id="previewImage" style="display:none;" />
+        <br>
+        <button type="submit">Classify</button>
+    </form>
+    <br>
+    <div id="result"></div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const previewImage = document.getElementById('previewImage');
+        const form = document.getElementById('uploadForm');
+        const resultDiv = document.getElementById('result');
+
+        // Preview and validation
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (!file) {
+                previewImage.style.display = 'none';
+                return;
+            }
+            
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                alert("Please select a valid image file (jpeg | jpg | png).");
+                fileInput.value = ''; // reset input
+                previewImage.style.display = 'none';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            resultDiv.innerHTML = "Processing...";
+
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("No file selected.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            resultDiv.innerHTML = "Sending request...";
+
+            try {
+                const response = await fetch('/classify', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `Bottle Status: ${data.bottle_status}. Confidence: ${data.confidence.toFixed(4)}`;
+                } else {
+                    const errorData = await response.json();
+                    resultDiv.innerHTML = `Error: ${errorData.error}`;
+                }
+            } catch (error) {
+                console.error("Error sending request:", error);
+                resultDiv.innerHTML = "An error occurred while sending the request.";
+            }
+        });
+    </script>
+</body>
+</html>

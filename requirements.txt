@@ -1,0 +1,24 @@
+# YOLOv11
+ultralytics
+
+# Image handling
+Pillow 
+
+# Logging
+loguru
+comet_ml
+
+# Web server
+Flask
+
+# Rate limiter
+Flask-Limiter
+
+# For file MIME type
+python-magic
+
+# For secure-filename
+werkzeug
+
+# High Throughput testing
+locust
